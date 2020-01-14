@@ -1,15 +1,47 @@
 # [node-red-contrib-logger][2]
-[Node Red][1] for logging and debugging.
+[Node Red][1] node for logging and debugging that dynamically turns off after reporting a set number of points.
 
 * logger
+
+The code can be used in developed nodes for loggings. Benefit it can be used to sample important detail in case of issues.  Tracing could be dynamically turned on by special topic messages. 
+
+
+	const Logger = require("logger");
+	const logger = new Logger("identifier");
+
+
+The following inserted where required to log
+
+	if(logger.active) logger.send({label:"a label" ,data:data});
+	if(logger.active) logger.send("a message");
+	logger.sendInfo("Copyright 2020 Jaroslav Peter Prib");
+
+Use of active is to avoid overhead of function call and parameter preparation when logging is not in effect. It changes state by default after 100 "send" are issued
+
+Alternatively can create by
+	
+	const logger = new Logger({name:"identifier",count:10,active:true,label:"debug"});
+
+Property "node" can be used to place status on node.
+"count" is number of sends processed before active set off. Default is 100
+"active" is initial state, default being true.
+"label" is set according to standard being info,warn,error,debug,trace.  Default is debug,
+
+Follow calls available: 
+
+	logger.setOff();	//turn off logging
+	logger.setOn();		//turn on logging for next x points
+	logger.setOn(22);		//turn on logging for next 22 points
+	logger.sendInfo("a message"); 		//always send info message 
+	
 
 ------------------------------------------------------------
 
 ## logger
 
-Defines the client interface to kafka. 
+Defines a node that will log messages and send to a second port for a set number of messages. 
 
-![Kafka Broker](documentation/logger.JPG "logger")
+![logger](documentation/logger.JPG "logger")
 
 ------------------------------------------------------------
 

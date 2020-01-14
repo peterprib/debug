@@ -16,7 +16,7 @@
     "node-red-node-test-helper":"*"
   },
   "scripts": {
-    "test": "mocha test/loggerTest.js",
+    "test": "mocha \"test/**/*_spec.js\"",
     "lint": "eslint --ext .js ./",
     "lint-fix": "eslint --fix --ext .js ./"
   },

@@ -1,6 +1,6 @@
 const Logger = require("./logger");
 const logger = new Logger("logger Node");
-logger.sendInfo("Copyright 2020/ Jaroslav Peter Prib");
+logger.sendInfo("Copyright 2020 Jaroslav Peter Prib");
 
 if(logger.active) logger.send("test active");
 
