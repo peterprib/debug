@@ -8,26 +8,30 @@
         <label for="node-input-name"><i class="fa fa-tag"></i> Name </label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
-
 	<div class="form-row">
-		<label for="node-config-input-count"><i class="fa fa-tag"></i> Count) </label>
- 		<input type="number" min="1" max="100000" step="10" id="node-config-input-count">
+		<label for="node-input-count"><i class="fa fa-tag"></i> Number of messages </label>
+ 		<input type="number" min="1" max="100000" step="10" id="node-input-count">
 	</div>
 	<div class="form-row">
-		<input type="checkbox" id="node-config-input-sendOutputLog" style="display: inline-block; width: auto; vertical-align: top;">
-		<label for="node-config-input-sendOutputLog" style="width: auto">Send to log port</label>
+		<input type="checkbox" id="node-input-sendOutputLog" style="display: inline-block; width: auto; vertical-align: top;">
+		<label for="node-input-sendOutputLog" style="width: auto">Send to log port</label>
+	</div>
+	<div class="form-row">
+		<input type="checkbox" id="node-input-active" style="display: inline-block; width: auto; vertical-align: top;">
+		<label for="node-input-active" style="width: auto">Initially On</label>
 	</div>
 
 </script>
 
 <script type="text/javascript">
-    RED.nodes.registerType('Logger',{
+   	const nodeName="Logger";
+    RED.nodes.registerType(nodeName,{
     	category: 'function',
         defaults: {
             name: {value:"",required:false},
-            count: {value:100,required:false},
-            sendOutputLog: {value:false}
-            
+            count: {value:100,required:true},
+            sendOutputLog: {value:false,required:true},
+            active: {value:true,required:true}
         },
 	    inputs:1,
         inputLabels: "Message",
@@ -35,17 +39,20 @@
         outputLabels: ["Out","Log"],
         icon: "setting.png",
         label: function() {
-            return this.name||this._("Logger");
+            return this.name||this._(nodeName);
         },
         labelStyle: function() {
             return "node_label_italic";
         },
         oneditprepare: function() {
-        	if(typeof this.usetls === 'undefined') {
+        	if(typeof this.sendOutputLog === 'undefined') {
                 this.sendOutputLog = false;
                 $("#node-config-input-sendOutputLog").prop("checked",false);
             }
-        
+        	if(typeof this.active === 'undefined') {
+                this.active = true;
+                $("#node-config-input-active").prop("checked",true);
+            }
         },
         oneditsave: function() {
         },
@@ -57,7 +64,7 @@
             },
            	onclick: function() {
                 if (this.changed) {
-                    return RED.notify(RED._("Logger undeployed changes"),"warning");
+                    return RED.notify(RED._(nodeName+" undeployed changes"),"warning");
                 }
                 var label = this._def.label.call(this);
                 if (label.length > 30) {
@@ -67,16 +74,15 @@
                 var node = this;
                 
                 function sendCommand(element,action) {
-                	const nodeName="Logger";
-                	$(element).dialog("close");
-                	$.get( "/KafkaAdmin/"+node.id+"/"+action )
+                   	$(element).dialog("close");
+                	$.get( "/"+nodeName+"/"+node.id+"/"+action )
 			        .done(function(json) {
 			        console.log(JSON.stringify(json));
             		   	RED.notify(node._(nodeName+" signal success",{label:label}),{type:"success",id:"Load Injector"});
             		   	$('<div></div>').appendTo('body').html(JSON.stringify(json))
             		   	.dialog({
       						modal: true,
-      						title: (node.name||'Logger')+" "+action,
+      						title: (node.name||nodeName)+" "+action,
       						zIndex: 10000,
       						autoOpen: true,
    							width: 'auto',
@@ -101,13 +107,13 @@
                 }
                 $('<div></div>').appendTo('body').html('<div>Choose Action</div>')
   				.dialog({
-      				modal: true, title: (node.name||'Logger'), zIndex: 10000, autoOpen: true,
+      				modal: true, title: (node.name||nodeName), zIndex: 10000, autoOpen: true,
    					width: 'auto', resizable: false,
 					buttons: {
-						"setOn": function () {
+						"On": function () {
 							sendCommand(this,"setOn");
 						},
-						"setOff": function () {
+						"Off": function () {
 							sendCommand(this,"setOff");
 						},
 					},

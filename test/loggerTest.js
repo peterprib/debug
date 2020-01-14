@@ -2,7 +2,11 @@ const should = require("should");
 const helper = require("node-red-node-test-helper")
 const loggerNode = require("../loggerNode.js");
 
-helper.init(require.resolve('node-red'));
+//helper.init(require.resolve('node-red'));
+
+helper.init(require.resolve('node-red'), { 
+    functionGlobalContext: { os:require('os') }
+});
 
 console.log("helper "+Object.keys(helper));
 
