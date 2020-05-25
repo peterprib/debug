@@ -1,5 +1,6 @@
 const loggerStatusActive={fill: 'yellow',shape:'ring',text:'Logging'};
 const loggerStatusOff={fill: 'green',shape:'ring',text:''};
+const { inspect } = require('util');
 
 function Logger(label="***",active,count) {
 	this.consoleFunction=console.log;
@@ -16,8 +17,10 @@ function Logger(label="***",active,count) {
 	this.set(this.active,this.count);
 	return this;
 };
-Logger.prototype.send=function(message,type,node,sendFunction=this.sendFunction) {
-	if(--this.count) {
+Logger.prototype.objectDump=function(o) {
+	return o?this.send(inspect(o, {showHidden: true, depth: null})):this;
+};
+Logger.prototype.send=function(message,type,node,sendFunction=this.sendFunction) {	if(--this.count) {
 		sendFunction.apply(this,[(message instanceof Object ? JSON.stringify(message) : message),type,node]);
 	} else {
 		this.setOff();
@@ -29,12 +32,25 @@ Logger.prototype.sendConsole=function(message,type=this.type,consoleFunction=thi
 	consoleFunction.apply(this,[([parseInt(ts[2], 10), ts[1], ts[4]].join(" ") + " - ["+type+"] "+this.label+" "+message)]);
 	return this;
 };
+Logger.prototype.sendError=function(message) {
+	return this.send(message,"error");
+}
+Logger.prototype.sendErrorAndDump=function(message,o) {
+	return this.sendError(message).objectDump(o).stackDump();
+}
+Logger.prototype.sendErrorAndStackDump=function(message) {
+	return this.sendError(message).stackDump();
+}
 Logger.prototype.sendInfo=function(message) {
 	return this.send(message,"info");
 }
 Logger.prototype.sendNode=function(message,node=this.node,type=this.noderedLogType) {
 	return node[type](message);
 }
+Logger.prototype.sendWarn=function(message) {
+	return this.send(message,"warn");
+}
+Logger.prototype.sendWarning=Logger.prototype.sendWarn;
 Logger.prototype.setNodeStatus=function(node) {
 	if(node) this.node=node;
 	if(this.node==null) throw Error("No node set");
@@ -60,4 +76,9 @@ Logger.prototype.setOn=function(count=this.countDefault) {
 Logger.prototype.showNodeStatus=function() {
 	if(this.node) this.node.status(this.active?loggerStatusActive:loggerStatusOff);
 };
+Logger.prototype.stackDump=function() {
+	console.trace();
+	return this;
+};
+
 module.exports = Logger;

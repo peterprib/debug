@@ -33,7 +33,12 @@ Follow calls available:
 	logger.setOn();		//turn on logging for next x points
 	logger.setOn(22);		//turn on logging for next 22 points
 	logger.sendInfo("a message"); 		//always send info message 
-	
+	logger.sendWarn("a message"); 		//always send warn message 
+	logger.sendError("a message"); 		//always send error message 
+	logger.objectDump(anObject); // dump an object
+	logger.stackDump(); // dump stack trace
+	logger.sendErrorAndDump("a message",anObject); //always sendError+objectDump+stackDump
+	logger.sendErrorAndStackDump("a message"); //sendError+stackDump
 
 ------------------------------------------------------------
 
@@ -55,6 +60,7 @@ Run the following command in the root directory of your Node-RED install or via 
 ------------------------------------------------------------
 
 # Version
+0.0.1 add more functions
 
 0.0.1 base
 
