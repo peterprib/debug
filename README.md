@@ -74,3 +74,5 @@ Run the following command in the root directory of your Node-RED install or via 
 [2]: https://www.npmjs.com/package/node-red-contrib-logger "source code"
 
 [3]: https://github.com/peterprib "base github"
+
+![.github/workflows/nodejs.yml](https://github.com/peterprib/node-red-contrib-logger/workflows/.github/workflows/nodejs.yml/badge.svg?event=release)
