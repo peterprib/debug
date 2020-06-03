@@ -35,11 +35,11 @@ Logger.prototype.sendConsole=function(message,type=this.type,consoleFunction=thi
 Logger.prototype.sendError=function(message) {
 	return this.send(message,"error");
 }
-Logger.prototype.sendErrorAndDump=function(message,o) {
-	return this.sendError(message).objectDump(o).stackDump();
+Logger.prototype.sendErrorAndDump=function(message,o,ex) {
+	return this.sendError(message).objectDump(o).stackDump(ex);
 }
-Logger.prototype.sendErrorAndStackDump=function(message) {
-	return this.sendError(message).stackDump();
+Logger.prototype.sendErrorAndStackDump=function(message,ex) {
+	return this.sendError(message).stackDump(ex);
 }
 Logger.prototype.sendInfo=function(message) {
 	return this.send(message,"info");
@@ -76,8 +76,9 @@ Logger.prototype.setOn=function(count=this.countDefault) {
 Logger.prototype.showNodeStatus=function() {
 	if(this.node) this.node.status(this.active?loggerStatusActive:loggerStatusOff);
 };
-Logger.prototype.stackDump=function() {
-	console.trace();
+Logger.prototype.stackDump=function(ex) {
+	if(ex) console.log(ex.stack) 
+	else console.trace();
 	return this;
 };
 
