@@ -2,25 +2,22 @@ const loggerStatusActive={fill: 'yellow',shape:'ring',text:'Logging'};
 const loggerStatusOff={fill: 'green',shape:'ring',text:''};
 const { inspect } = require('util');
 
-function Logger(label="***",active,count) {
+function Logger(label="***",active=true,count=111,msg) {
 	this.consoleFunction=console.log;
-	this.sendFunction=this.sendConsole
+	this.sendFunction=this.sendConsole;
 	this.type="debug";
-	if(label instanceof Object) {
-		Object.assign(this,label);
-	} else {
-		this.label=label;
-		this.count=count;
-	}
-	if(this.active==undefined) this.active=true;
-	if(this.count==undefined) this.count=111;
+	if(label instanceof Object)	Object.assign(this,label);
+	else this.label=label;
+	if(this.active==undefined) this.active=active;
+	if(this.count==undefined) this.count=count;
 	this.set(this.active,this.count);
-	return this;
+	return msg?this.sendInfo(msg):this;
 };
 Logger.prototype.objectDump=function(o) {
 	return o?this.send(inspect(o, {showHidden: true, depth: null})):this;
 };
-Logger.prototype.send=function(message,type,node,sendFunction=this.sendFunction) {	if(--this.count) {
+Logger.prototype.send=function(message,type,node,sendFunction=this.sendFunction) {
+	if(--this.count) {
 		sendFunction.apply(this,[(message instanceof Object ? JSON.stringify(message) : message),type,node]);
 	} else {
 		this.setOff();
@@ -32,9 +29,14 @@ Logger.prototype.sendConsole=function(message,type=this.type,consoleFunction=thi
 	consoleFunction.apply(this,[([parseInt(ts[2], 10), ts[1], ts[4]].join(" ") + " - ["+type+"] "+this.label+" "+message)]);
 	return this;
 };
+Logger.prototype.sendDebug=function(message) {
+	return this.send(message,"debug");
+}
+Logger.prototype.debug=Logger.prototype.sendDebug;
 Logger.prototype.sendError=function(message) {
 	return this.send(message,"error");
 }
+Logger.prototype.error=Logger.prototype.sendError;
 Logger.prototype.sendErrorAndDump=function(message,o,ex) {
 	return this.sendError(message).objectDump(o).stackDump(ex);
 }
@@ -44,6 +46,7 @@ Logger.prototype.sendErrorAndStackDump=function(message,ex) {
 Logger.prototype.sendInfo=function(message) {
 	return this.send(message,"info");
 }
+Logger.prototype.info=Logger.prototype.sendInfo;
 Logger.prototype.sendNode=function(message,node=this.node,type=this.noderedLogType) {
 	return node[type](message);
 }
@@ -51,6 +54,8 @@ Logger.prototype.sendWarn=function(message) {
 	return this.send(message,"warn");
 }
 Logger.prototype.sendWarning=Logger.prototype.sendWarn;
+Logger.prototype.warn=Logger.prototype.sendWarn;
+Logger.prototype.warning=Logger.prototype.sendWarn;
 Logger.prototype.setNodeStatus=function(node) {
 	if(node) this.node=node;
 	if(this.node==null) throw Error("No node set");
