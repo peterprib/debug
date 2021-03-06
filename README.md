@@ -1,4 +1,5 @@
 # [node-red-contrib-logger][2]
+
 [Node Red][1] node for logging and debugging that dynamically turns off after reporting a set number of points.
 
 * logger
@@ -35,6 +36,7 @@ Follow calls available:
 	logger.sendInfo("a message"); 		//always send info message 
 	logger.sendWarn("a message"); 		//always send warn message 
 	logger.sendError("a message"); 		//always send error message 
+	logger.sendDebug("a message",{a:a}); 		//always send error message 
 	logger.objectDump(anObject); // dump an object
 	logger.stackDump(); // dump stack trace
 	logger.sendErrorAndDump("a message",anObject); //always sendError+objectDump+stackDump
@@ -60,6 +62,8 @@ Run the following command in the root directory of your Node-RED install or via 
 ------------------------------------------------------------
 
 # Version
+
+0.0.5 Add parameter value to send json data to display
 
 0.0.4 Fixes bug and add warn/error alias
 

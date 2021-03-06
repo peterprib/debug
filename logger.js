@@ -29,7 +29,8 @@ Logger.prototype.sendConsole=function(message,type=this.type,consoleFunction=thi
 	consoleFunction.apply(this,[([parseInt(ts[2], 10), ts[1], ts[4]].join(" ") + " - ["+type+"] "+this.label+" "+message)]);
 	return this;
 };
-Logger.prototype.sendDebug=function(message) {
+Logger.prototype.sendDebug=function(message,values) {
+	if(values) return this.send(Object.assign({},{label:message},values),"debug");
 	return this.send(message,"debug");
 }
 Logger.prototype.debug=Logger.prototype.sendDebug;
