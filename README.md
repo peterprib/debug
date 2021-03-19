@@ -46,7 +46,7 @@ Follow calls available:
 
 ## logger
 
-Defines a node that will log messages and send to a second port for a set number of messages. 
+Defines a node that will log messages, send to a second port and/or send to debug console for a set number of messages. 
 
 ![logger](documentation/logger.JPG "logger")
 
@@ -62,6 +62,8 @@ Run the following command in the root directory of your Node-RED install or via 
 ------------------------------------------------------------
 
 # Version
+
+0.0.6 Add parameter value to send json data to debug console and handle circular references
 
 0.0.5 Add parameter value to send json data to display
 
