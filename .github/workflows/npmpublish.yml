@@ -4,9 +4,10 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
-
+  workflow_run:
+    workflows: [nodejs]
+    types:
+      - completed
 jobs:
   build:
     runs-on: ubuntu-latest
