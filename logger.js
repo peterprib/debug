@@ -17,8 +17,12 @@ Logger.prototype.objectDump=function(o) {
 	return o?this.send(inspect(o, {showHidden: true, depth: null})):this;
 };
 Logger.prototype.send=function(message,type,node,sendFunction=this.sendFunction) {
-	if(--this.count) {
-		sendFunction.apply(this,[(message instanceof Object ? JSON.stringify(message) : message),type,node]);
+	if (--this.count) {
+		try {
+			sendFunction.apply(this, [(message instanceof Object ? JSON.stringify(message) : message), type, node])
+		} catch (ex) {
+			sendFunction.apply(this, [ex.message, type, node])
+		}
 	} else {
 		this.setOff();
 	}
