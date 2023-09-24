@@ -5,7 +5,7 @@ name: Node.js Package
 
 on:
   workflow_run:
-    workflows: [Node node-red-contrib-logger]
+    workflows: [build (18.x)]
     types:
       - completed
 jobs:
