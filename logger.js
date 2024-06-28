@@ -4,6 +4,8 @@ const { inspect } = require('util');
 
 function Logger(label="***",active=true,count=111,msg) {
 	this.consoleFunction=console.log;
+	this.onStack=[]
+	this.offStack=[]
 	this.sendFunction=this.sendConsole;
 	this.type="debug";
 	if(label instanceof Object)	Object.assign(this,label);
@@ -67,18 +69,51 @@ Logger.prototype.setNodeStatus=function(node) {
 	this.showNodeStatus();
 	return this;
 };
+Logger.prototype.runStack=function(stack) {
+	for (const action of stack) {
+		try {
+		  action.callFunction(...action.args)
+		} catch (ex) {
+		  if( action.onError ) action.onError(ex)
+		  else throw ex
+		}
+	  }
+	return this;
+};
+Logger.prototype.add2Stack = function(stack,callFunction, ...args) {
+    if (typeof callFunction === 'object') {
+      if(!callFunction.callFunction) throw Error("no callFunction property in "+JSON.stringify(callFunction))
+      if(callFunction.args) callFunction.args = callFunction.args = callFunction.args.concat(args)
+      else callFunction.args = args
+      stack.push(callFunction) 
+    } else {
+      if (typeof callFunction !== 'function') throw Error('expected function')
+      stack.push({ callFunction: callFunction, args: args })
+    }
+    return this
+}
+Logger.prototype.onOff=function(...action) {
+	this.add2Stack(this.offStack,...action)
+	return this;
+};
+Logger.prototype.onOn=function(...action) {
+	this.add2Stack(this.onStack,...action)
+	return this;
+};
 Logger.prototype.set=function(active,count) {
 	if(count!==undefined) {
 		this.count=count;
 		this.countDefault=count
 	}
 	if(active!==undefined) this.active=active;
+	this.active?this.runStack(this.onStack):this.runStack(this.offStack)
 	this.showNodeStatus();
 	this.sendConsole('logging turning '+(this.active?"on logging next " + this.count + " log points":"off"));
 	return this;
 };
 Logger.prototype.setOff=function() {
-	return this.set(false);
+	this.set(false)
+	return this;
 };
 Logger.prototype.setOn=function(count=this.countDefault) {
 	return this.set(true,count);

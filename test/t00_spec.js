@@ -16,5 +16,17 @@ describe('Mocha Test Case', function() {
 //        assert.equal(sqrt, 25);
         done();
     });
+    it('set on', function(done) {
+        let r=""
+        logger.onOn({callFunction:()=>{r="setOn1"}})
+        logger.onOn((a)=>{r=a},"setOn2")
+        logger.onOff({callFunction:()=>{r="setOff1"}})
+        logger.onOn((a)=>{r=a},"setOff2")
+       	logger.active && logger.send("a label "+r);
+        logger.setOff()
+        logger.active && done("should not run")
+        logger.setOn()
+        logger.active?done():done("shown be on")
+    });
 
 });
