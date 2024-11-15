@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "description": "Node-RED implements logger and debug/logging for control for any insert.",
   "main": "logger.js",
-  "dependencies": {},
+  "dependencies": {
+    "node-red-contrib-logger": "file:"
+  },
   "devDependencies": {
     "mocha": "*",
     "node-red": "*",
@@ -11,7 +13,7 @@
   },
   "scripts": {
     "test": "mocha \"test/**/*_spec.js\"",
-    "updateNpm":"npm update"
+    "updateNpm": "npm update"
   },
   "repository": {
     "type": "git",
